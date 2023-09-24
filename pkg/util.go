@@ -53,3 +53,13 @@ func PathExists(path string) bool {
 	_, err := os.Stat(path)
 	return !os.IsNotExist(err)
 }
+
+func OpenDir(dir string) {
+	openCmd := exec.Command("code", dir)
+	_, err := openCmd.Output()
+	if err != nil {
+		fmt.Println("Error opening worktree using VS Code", err)
+		return
+	}
+}
+

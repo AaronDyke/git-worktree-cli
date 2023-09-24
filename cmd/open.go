@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"fmt"
-	"os/exec"
 
 	utils "github.com/AaronDyke/git-worktree-cli/pkg"
 	"github.com/spf13/cobra"
@@ -40,12 +39,7 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		openCmd := exec.Command("code", WorktreeDir)
-		_, err := openCmd.Output()
-		if err != nil {
-			fmt.Println("Error opening worktree using VS Code", err)
-			return
-		}
+		utils.OpenDir(WorktreeDir)
 	},
 }
 
