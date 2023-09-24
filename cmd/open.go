@@ -1,12 +1,13 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	"os/exec"
 
+	utils "github.com/AaronDyke/git-worktree-cli/pkg"
 	"github.com/spf13/cobra"
 )
 
@@ -22,6 +23,25 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("open called")
+
+		if !utils.IsGitRepo() {
+			fmt.Println("Not inside a git repo")
+			return
+		}
+
+		if !utils.GitBranchExists(args[0]) {
+			fmt.Println("Branch does not exist")
+			return
+		}
+
+		WorktreeDir := utils.GitWorktreeDir(args[0])
+
+		openCmd := exec.Command("code", WorktreeDir)
+		_, err := openCmd.Output()
+		if err != nil {
+			fmt.Println("Error opening worktree using VS Code", err)
+			return
+		}
 	},
 }
 
