@@ -14,13 +14,8 @@ import (
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Create a new worktree for the given branch",
+	Long:  `Create a new worktree for the given branch.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if !utils.IsGitRepo() {
 			fmt.Println("Not inside a git repo")
@@ -59,7 +54,7 @@ func init() {
 	rootCmd.AddCommand(addCmd)
 
 	addCmd.Flags().BoolP("branch", "b", false, "Create a new branch and add it as a worktree")
-	addCmd.Flags().BoolP("open", "o", false, "Open the worktree in VS Code")
+	addCmd.Flags().BoolP("open", "o", false, "Open the worktree, after creation, in VS Code")
 
 	// Here you will define your flags and configuration settings.
 
