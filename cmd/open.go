@@ -35,6 +35,10 @@ to quickly create a Cobra application.`,
 		}
 
 		WorktreeDir := utils.GitWorktreeDir(args[0])
+		if !utils.PathExists(WorktreeDir) {
+			fmt.Println("Worktree does not exist on your computer")
+			return
+		}
 
 		openCmd := exec.Command("code", WorktreeDir)
 		_, err := openCmd.Output()

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -46,4 +47,9 @@ func IsGitRepo() bool {
 		fmt.Println(err)
 	}
 	return string(out) != "true"
+}
+
+func PathExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
 }
