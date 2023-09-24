@@ -30,8 +30,15 @@ to quickly create a Cobra application.`,
 		utils.GitFetch()
 
 		if !utils.GitBranchExists(args[0]) {
-			fmt.Println("Branch does not exist")
-			return
+			if branch, _ := cmd.Flags().GetBool("branch"); branch {
+				utils.CreateGitBranch(args[0])
+			} else {
+				if utils.AskForConfirmation(fmt.Sprintf("Branch %s does not exist. Do you wnat to create it?", args[0])) {
+					utils.CreateGitBranch(args[0])
+				} else {
+					return
+				}
+			}
 		}
 
 		WorktreeDir := utils.GitWorktreeDir(args[0])
@@ -42,11 +49,17 @@ to quickly create a Cobra application.`,
 			fmt.Println("Error adding worktree", err)
 		}
 		fmt.Println(string(out))
+		if open, _ := cmd.Flags().GetBool("open"); open {
+			utils.OpenDir(WorktreeDir)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(addCmd)
+
+	addCmd.Flags().BoolP("branch", "b", false, "Create a new branch and add it as a worktree")
+	addCmd.Flags().BoolP("open", "o", false, "Open the worktree in VS Code")
 
 	// Here you will define your flags and configuration settings.
 
