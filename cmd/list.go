@@ -20,13 +20,8 @@ type Worktree struct {
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "List current worktrees",
+	Long:  `List current worktrees`,
 	Run: func(cmd *cobra.Command, args []string) {
 		gitCmd := exec.Command("git", "worktree", "list")
 		out, err := gitCmd.Output()
@@ -53,13 +48,20 @@ to quickly create a Cobra application.`,
 				Hash:   clean_lineSplit[1],
 				Branch: clean_lineSplit[2],
 			}
-			fmt.Println(worktree.Path, worktree.Branch)
+
+			if verbose, _ := cmd.Flags().GetBool("verbose"); verbose {
+				fmt.Println(worktree.Path, worktree.Branch, worktree.Hash)
+			} else {
+				fmt.Println(worktree.Branch)
+			}
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(listCmd)
+
+	listCmd.Flags().BoolP("verbose", "v", false, "Verbose output")
 
 	// Here you will define your flags and configuration settings.
 
