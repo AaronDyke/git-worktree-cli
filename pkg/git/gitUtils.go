@@ -95,7 +95,7 @@ func PromptForBranch() (string, error) {
 
 	_, result, err := prompt.Run()
 	//  remove star or plus from selected branch
-	if strings.HasPrefix(result, "*") {
+	if strings.HasPrefix(result, "*") || strings.HasPrefix(result, "+") {
 		result = strings.TrimSpace(result[1:])
 	}
 
