@@ -16,8 +16,6 @@ var openCmd = &cobra.Command{
 	Short: "Open worktree in VSCode",
 	Long:  `Open worktree in VSCode`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("open called")
-
 		if !utils.IsGitRepo() {
 			fmt.Println("Not inside a git repo")
 			return
