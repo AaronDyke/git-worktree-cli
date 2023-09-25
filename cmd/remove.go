@@ -27,7 +27,28 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		WorktreeDir := gitUtils.WorktreeDir(args[0])
+		branchName := ""
+		if len(args) == 0 {
+			// User has not specified a worktree branch, prompt for one
+			branch, err := gitUtils.PromptForWorktree()
+			if err != nil {
+				fmt.Println("Error getting worktree", err)
+				return
+			}
+			branchName = branch
+		} else if len(args) == 1 {
+			// User has specified a worktree branch
+			if gitUtils.WorktreeExists(args[0]) {
+				branchName = args[0]
+			} else {
+				fmt.Println("Worktree does not exist")
+				return
+			}
+		} else {
+			fmt.Println("Too many arguments")
+			return
+		}
+		WorktreeDir := gitUtils.WorktreeDir(branchName)
 
 		gitCmd := exec.Command("git", "worktree", "remove", WorktreeDir)
 		out, err := gitCmd.Output()

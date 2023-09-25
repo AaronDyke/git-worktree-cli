@@ -25,21 +25,46 @@ var addCmd = &cobra.Command{
 
 		gitUtils.Fetch()
 
-		if !gitUtils.BranchExists(args[0]) {
-			if branch, _ := cmd.Flags().GetBool("branch"); branch {
-				gitUtils.CreateBranch(args[0])
+		branchName := ""
+		if len(args) == 0 {
+			// User has not specified a branch, prompt for one
+			branch, er := gitUtils.PromptForBranch()
+			if er != nil {
+				fmt.Println("Error getting branch", er)
+				return
+			}
+			branchName = branch
+		} else if len(args) == 1 {
+			if gitUtils.WorktreeExists(args[0]) {
+				fmt.Println("Worktree already exists")
+				WorktreeDir := gitUtils.WorktreeDir(args[0])
+				if open, _ := cmd.Flags().GetBool("open"); open {
+					utils.OpenDir(WorktreeDir)
+				}
+				return
+			}
+			if gitUtils.BranchExists(args[0]) {
+				branchName = args[0]
 			} else {
-				if utils.AskForConfirmation(fmt.Sprintf("Branch %s does not exist. Do you wnat to create it?", args[0])) {
+				// Branch does not exist
+				if branch, _ := cmd.Flags().GetBool("branch"); branch {
+					// User has specified to create a new branch
 					gitUtils.CreateBranch(args[0])
 				} else {
-					return
+					// User has not specified to create a new branch
+					if utils.AskForConfirmation(fmt.Sprintf("Branch %s does not exist. Do you wnat to create it?", args[0])) {
+						gitUtils.CreateBranch(args[0])
+					} else {
+						return
+					}
 				}
+				branchName = args[0]
 			}
 		}
 
-		WorktreeDir := gitUtils.WorktreeDir(args[0])
+		WorktreeDir := gitUtils.WorktreeDir(branchName)
 
-		gitCmd := exec.Command("git", "worktree", "add", WorktreeDir, args[0])
+		gitCmd := exec.Command("git", "worktree", "add", WorktreeDir, branchName)
 		out, err := gitCmd.Output()
 		if err != nil {
 			fmt.Println("Error adding worktree", err)

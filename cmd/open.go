@@ -22,17 +22,31 @@ var openCmd = &cobra.Command{
 			return
 		}
 
-		if !gitUtils.BranchExists(args[0]) {
-			fmt.Println("Branch does not exist")
-			return
+		branchName := ""
+		if len(args) == 0 {
+			// User has not specified a branch, prompt for one
+			branch, err := gitUtils.PromptForWorktree()
+			if err != nil {
+				fmt.Println("Error getting worktree", err)
+				return
+			}
+			branchName = branch
+		} else if len(args) == 1 {
+			// User has specified a branch
+			if gitUtils.BranchExists(args[0]) {
+				branchName = args[0]
+			} else {
+				fmt.Println("Branch does not exist")
+				return
+			}
 		}
 
-		WorktreeDir := gitUtils.WorktreeDir(args[0])
+		WorktreeDir := gitUtils.WorktreeDir(branchName)
 		if !utils.PathExists(WorktreeDir) {
 			fmt.Println("Worktree does not exist on your computer")
 			return
 		}
-
+		fmt.Println("Opening worktree", WorktreeDir)
 		utils.OpenDir(WorktreeDir)
 	},
 }
