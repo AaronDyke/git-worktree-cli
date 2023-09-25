@@ -36,9 +36,8 @@ var addCmd = &cobra.Command{
 		} else if len(args) == 1 {
 			if gitUtils.WorktreeExists(args[0]) {
 				fmt.Println("Worktree already exists")
-				WorktreeDir := gitUtils.WorktreeDir(args[0])
-				if open, _ := cmd.Flags().GetBool("open"); open {
-					utils.OpenDir(WorktreeDir)
+				if utils.AskForConfirmation("Do you want to switch to the worktree?") {
+					gitUtils.SwitchWorkTree(args[0])
 				}
 				return
 			}
@@ -62,6 +61,12 @@ var addCmd = &cobra.Command{
 		}
 
 		gitUtils.AddWorkTree(branchName)
+
+		if open, _ := cmd.Flags().GetBool("open"); open {
+			gitUtils.SwitchWorkTree(branchName)
+		} else if utils.AskForConfirmation("Do you want to switch to the new worktree?") {
+			gitUtils.SwitchWorkTree(branchName)
+		}
 	},
 }
 

@@ -51,7 +51,7 @@ var openCmd = &cobra.Command{
 			}
 		}
 		fmt.Println("Opening worktree", WorktreeDir)
-		utils.OpenDir(WorktreeDir)
+		gitUtils.SwitchWorkTree(branchName)
 	},
 }
 

@@ -141,3 +141,13 @@ func RemoveWorkTree(branch string) {
 		fmt.Println(err)
 	}
 }
+
+func SwitchWorkTree(branchName string) {
+	WorktreeDir := WorktreeDir(branchName)
+	openCmd := exec.Command("code", WorktreeDir)
+	_, err := openCmd.Output()
+	if err != nil {
+		fmt.Println("Error opening worktree using VS Code", err)
+		return
+	}
+}
