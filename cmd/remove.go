@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"fmt"
-	"os/exec"
 
 	gitUtils "github.com/AaronDyke/git-worktree-cli/pkg/git"
 	"github.com/spf13/cobra"
@@ -48,14 +47,8 @@ to quickly create a Cobra application.`,
 			fmt.Println("Too many arguments")
 			return
 		}
-		WorktreeDir := gitUtils.WorktreeDir(branchName)
 
-		gitCmd := exec.Command("git", "worktree", "remove", WorktreeDir)
-		out, err := gitCmd.Output()
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(string(out))
+		gitUtils.RemoveWorkTree(branchName)
 	},
 }
 

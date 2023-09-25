@@ -132,3 +132,12 @@ func AddWorkTree(branch string) {
 		fmt.Println(err)
 	}
 }
+
+func RemoveWorkTree(branch string) {
+	WorktreeDir := WorktreeDir(branch)
+	gitCmd := exec.Command("git", "worktree", "remove", WorktreeDir)
+	_, err := gitCmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
