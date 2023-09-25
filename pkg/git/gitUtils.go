@@ -39,6 +39,18 @@ func Fetch() {
 	}
 }
 
+func WorktreeList() []string {
+	gitCmd := exec.Command("git", "worktree", "list")
+	out, err := gitCmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
+	worktrees := strings.Split(string(out), "\n")
+	// remove empty string at end of slice
+	worktrees = worktrees[:len(worktrees)-1]
+	return worktrees
+}
+
 func WorktreeDir(branch string) string {
 	topLevel := TopLevel()
 	parentFolder := topLevel[:strings.LastIndex(topLevel, "/")]

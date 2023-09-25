@@ -5,17 +5,10 @@ package cmd
 
 import (
 	"fmt"
-	"os/exec"
-	"strings"
 
+	gitUtils "github.com/AaronDyke/git-worktree-cli/pkg/git"
 	"github.com/spf13/cobra"
 )
-
-type Worktree struct {
-	Branch string
-	Path   string
-	Hash   string
-}
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
@@ -23,45 +16,17 @@ var listCmd = &cobra.Command{
 	Short: "List current worktrees",
 	Long:  `List current worktrees`,
 	Run: func(cmd *cobra.Command, args []string) {
-		gitCmd := exec.Command("git", "worktree", "list")
-		out, err := gitCmd.Output()
-		if err != nil {
-			fmt.Println(err)
+		worktrees := gitUtils.WorktreeList()
+		fmt.Println("")
+		for _, worktree := range worktrees {
+			fmt.Println(worktree)
 		}
-
-		gitCmdOutput := string(out)
-		gitCmdOutputLines := strings.Split(gitCmdOutput, "\n")
-		// remove the empty string at the end of the slice
-		gitCmdOutputLines = gitCmdOutputLines[:len(gitCmdOutputLines)-1]
-
-		for _, line := range gitCmdOutputLines {
-			lineSplit := strings.Split(line, " ")
-			clean_lineSplit := []string{}
-			for _, str := range lineSplit {
-				if str != "" {
-					clean_lineSplit = append(clean_lineSplit, str)
-				}
-			}
-
-			worktree := Worktree{
-				Path:   clean_lineSplit[0],
-				Hash:   clean_lineSplit[1],
-				Branch: clean_lineSplit[2],
-			}
-
-			if verbose, _ := cmd.Flags().GetBool("verbose"); verbose {
-				fmt.Println(worktree.Path, worktree.Branch, worktree.Hash)
-			} else {
-				fmt.Println(worktree.Branch)
-			}
-		}
+		fmt.Println("")
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(listCmd)
-
-	listCmd.Flags().BoolP("verbose", "v", false, "Verbose output")
 
 	// Here you will define your flags and configuration settings.
 
