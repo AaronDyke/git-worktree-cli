@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"fmt"
-	"os/exec"
 
 	utils "github.com/AaronDyke/git-worktree-cli/pkg"
 	gitUtils "github.com/AaronDyke/git-worktree-cli/pkg/git"
@@ -52,7 +51,7 @@ var addCmd = &cobra.Command{
 					gitUtils.CreateBranch(args[0])
 				} else {
 					// User has not specified to create a new branch
-					if utils.AskForConfirmation(fmt.Sprintf("Branch %s does not exist. Do you wnat to create it?", args[0])) {
+					if utils.AskForConfirmation(fmt.Sprintf("Branch %s does not exist. Do you want to create it?", args[0])) {
 						gitUtils.CreateBranch(args[0])
 					} else {
 						return
@@ -62,17 +61,7 @@ var addCmd = &cobra.Command{
 			}
 		}
 
-		WorktreeDir := gitUtils.WorktreeDir(branchName)
-
-		gitCmd := exec.Command("git", "worktree", "add", WorktreeDir, branchName)
-		out, err := gitCmd.Output()
-		if err != nil {
-			fmt.Println("Error adding worktree", err)
-		}
-		fmt.Println(string(out))
-		if open, _ := cmd.Flags().GetBool("open"); open {
-			utils.OpenDir(WorktreeDir)
-		}
+		gitUtils.AddWorkTree(branchName)
 	},
 }
 

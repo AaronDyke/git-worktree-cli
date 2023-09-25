@@ -44,7 +44,11 @@ var openCmd = &cobra.Command{
 		WorktreeDir := gitUtils.WorktreeDir(branchName)
 		if !utils.PathExists(WorktreeDir) {
 			fmt.Println("Worktree does not exist on your computer")
-			return
+			if utils.AskForConfirmation(fmt.Sprintf("Branch %s does not exist. Do you want to create it?", args[0])) {
+				gitUtils.AddWorkTree(branchName)
+			} else {
+				return
+			}
 		}
 		fmt.Println("Opening worktree", WorktreeDir)
 		utils.OpenDir(WorktreeDir)

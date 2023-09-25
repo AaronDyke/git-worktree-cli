@@ -123,3 +123,12 @@ func CreateBranch(branch string) {
 		fmt.Println(err)
 	}
 }
+
+func AddWorkTree(branch string) {
+	WorktreeDir := WorktreeDir(branch)
+	gitCmd := exec.Command("git", "worktree", "add", WorktreeDir, branch)
+	_, err := gitCmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
