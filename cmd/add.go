@@ -8,6 +8,7 @@ import (
 	"os/exec"
 
 	utils "github.com/AaronDyke/git-worktree-cli/pkg"
+	gitUtils "github.com/AaronDyke/git-worktree-cli/pkg/git"
 	"github.com/spf13/cobra"
 )
 
@@ -17,26 +18,26 @@ var addCmd = &cobra.Command{
 	Short: "Create a new worktree for the given branch",
 	Long:  `Create a new worktree for the given branch.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if !utils.IsGitRepo() {
+		if !gitUtils.IsGitRepo() {
 			fmt.Println("Not inside a git repo")
 			return
 		}
 
-		utils.GitFetch()
+		gitUtils.Fetch()
 
-		if !utils.GitBranchExists(args[0]) {
+		if !gitUtils.BranchExists(args[0]) {
 			if branch, _ := cmd.Flags().GetBool("branch"); branch {
-				utils.CreateGitBranch(args[0])
+				gitUtils.CreateBranch(args[0])
 			} else {
 				if utils.AskForConfirmation(fmt.Sprintf("Branch %s does not exist. Do you wnat to create it?", args[0])) {
-					utils.CreateGitBranch(args[0])
+					gitUtils.CreateBranch(args[0])
 				} else {
 					return
 				}
 			}
 		}
 
-		WorktreeDir := utils.GitWorktreeDir(args[0])
+		WorktreeDir := gitUtils.WorktreeDir(args[0])
 
 		gitCmd := exec.Command("git", "worktree", "add", WorktreeDir, args[0])
 		out, err := gitCmd.Output()

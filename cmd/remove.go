@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	utils "github.com/AaronDyke/git-worktree-cli/pkg"
+	gitUtils "github.com/AaronDyke/git-worktree-cli/pkg/git"
 	"github.com/spf13/cobra"
 )
 
@@ -22,12 +22,12 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if !utils.IsGitRepo() {
+		if !gitUtils.IsGitRepo() {
 			fmt.Println("Not inside a git repo")
 			return
 		}
 
-		WorktreeDir := utils.GitWorktreeDir(args[0])
+		WorktreeDir := gitUtils.WorktreeDir(args[0])
 
 		gitCmd := exec.Command("git", "worktree", "remove", WorktreeDir)
 		out, err := gitCmd.Output()

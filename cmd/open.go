@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	utils "github.com/AaronDyke/git-worktree-cli/pkg"
+	gitUtils "github.com/AaronDyke/git-worktree-cli/pkg/git"
 	"github.com/spf13/cobra"
 )
 
@@ -16,17 +17,17 @@ var openCmd = &cobra.Command{
 	Short: "Open worktree in VSCode",
 	Long:  `Open worktree in VSCode`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if !utils.IsGitRepo() {
+		if !gitUtils.IsGitRepo() {
 			fmt.Println("Not inside a git repo")
 			return
 		}
 
-		if !utils.GitBranchExists(args[0]) {
+		if !gitUtils.BranchExists(args[0]) {
 			fmt.Println("Branch does not exist")
 			return
 		}
 
-		WorktreeDir := utils.GitWorktreeDir(args[0])
+		WorktreeDir := gitUtils.WorktreeDir(args[0])
 		if !utils.PathExists(WorktreeDir) {
 			fmt.Println("Worktree does not exist on your computer")
 			return
