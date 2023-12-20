@@ -16,6 +16,10 @@ var listCmd = &cobra.Command{
 	Short: "List current worktrees",
 	Long:  `List current worktrees`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if !gitUtils.IsGitRepo() {
+			return
+		}
+
 		worktrees := gitUtils.WorktreeList()
 		fmt.Println("")
 		for _, worktree := range worktrees {

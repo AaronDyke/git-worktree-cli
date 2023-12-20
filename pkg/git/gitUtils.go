@@ -12,7 +12,8 @@ func IsGitRepo() bool {
 	gitCmd := exec.Command("git", "rev-parse", "--is-inside-work-tree")
 	out, err := gitCmd.Output()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Not inside a git repo")
+		return false
 	}
 	return string(out) != "true"
 }

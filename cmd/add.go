@@ -18,7 +18,6 @@ var addCmd = &cobra.Command{
 	Long:  `Create a new worktree for the given branch.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if !gitUtils.IsGitRepo() {
-			fmt.Println("Not inside a git repo")
 			return
 		}
 
