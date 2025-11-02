@@ -5,6 +5,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/AaronDyke/git-worktree-cli/pkg/config"
 	"github.com/manifoldco/promptui"
 )
 
@@ -145,10 +146,21 @@ func RemoveWorkTree(branch string) {
 
 func SwitchWorkTree(branchName string) {
 	WorktreeDir := WorktreeDir(branchName)
-	openCmd := exec.Command("code", WorktreeDir)
-	_, err := openCmd.Output()
+
+	// Get configured editor
+	editor, err := config.GetConfiguredEditor()
 	if err != nil {
-		fmt.Println("Error opening worktree using VS Code", err)
+		fmt.Printf("Error getting editor: %v\n", err)
+		fmt.Println("Tip: Configure an editor with 'wt config set editor <name>'")
+		fmt.Println("     Or run 'wt config list' to see available editors")
 		return
 	}
+
+	openCmd := exec.Command(editor.Command, WorktreeDir)
+	_, err = openCmd.Output()
+	if err != nil {
+		fmt.Printf("Error opening worktree using %s: %v\n", editor.Name, err)
+		return
+	}
+	fmt.Printf("Opened worktree in %s\n", editor.Name)
 }
