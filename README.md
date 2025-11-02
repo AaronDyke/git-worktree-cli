@@ -1,10 +1,10 @@
 # Git Worktree CLI
 
-A command-line tool to easily manage Git worktrees with an intuitive interface and VS Code integration.
+A command-line tool to easily manage Git worktrees with an intuitive interface and multi-editor support.
 
 ## Overview
 
-Git Worktree CLI (alias: `wt`) simplifies working with Git worktrees by providing an easy-to-use interface for creating, managing, and switching between worktrees. Instead of manually managing worktree directories and paths, this tool handles the organization automatically and integrates seamlessly with VS Code.
+Git Worktree CLI (alias: `wt`) simplifies working with Git worktrees by providing an easy-to-use interface for creating, managing, and switching between worktrees. Instead of manually managing worktree directories and paths, this tool handles the organization automatically and integrates seamlessly with your favorite code editor.
 
 ## What are Git Worktrees?
 
@@ -17,10 +17,11 @@ Git worktrees allow you to have multiple working directories attached to the sam
 ## Features
 
 - **Easy Worktree Management**: Create, list, open, and remove worktrees with simple commands
+- **Multi-Editor Support**: Supports 15+ editors including VS Code, IntelliJ, Vim, Sublime Text, and more
+- **Auto-Detection**: Automatically detects available editors on your system
 - **Interactive Prompts**: Use interactive branch/worktree selection when commands are run without arguments
 - **Automatic Organization**: Worktrees are organized in a `.worktrees` directory structure
 - **Branch Creation**: Create new branches and their corresponding worktrees in one command
-- **VS Code Integration**: Automatically open worktrees in VS Code
 - **Smart Workflows**: Automatic fetching, confirmation prompts, and existence checks
 - **Cross-platform**: Works on Linux, macOS, and Windows
 
@@ -53,7 +54,60 @@ Download pre-built binaries from the [releases page](https://github.com/AaronDyk
 
 - Git 2.5+ (for worktree support)
 - Go 1.20+ (for building from source)
-- VS Code (optional, for `open` command and automatic opening)
+- A supported code editor (optional, for `open` command and automatic opening)
+
+## Configuration
+
+### Editor Support
+
+Git Worktree CLI supports multiple code editors. If you don't configure an editor, the tool will automatically detect and use the first available editor on your system (preferring VS Code if available).
+
+#### Supported Editors
+
+- **VS Code** (`code`) - Visual Studio Code
+- **VSCodium** (`codium`) - FOSS version of VS Code
+- **Cursor** (`cursor`) - Cursor AI Editor
+- **IntelliJ IDEA** (`idea`)
+- **GoLand** (`goland`)
+- **WebStorm** (`webstorm`)
+- **PyCharm** (`pycharm`)
+- **PhpStorm** (`phpstorm`)
+- **CLion** (`clion`)
+- **Rider** (`rider`)
+- **Sublime Text** (`subl`)
+- **Vim** (`vim`)
+- **Neovim** (`nvim`)
+- **Emacs** (`emacs`)
+- **Atom** (`atom`)
+
+#### Editor Configuration Commands
+
+```bash
+# See which editors are available on your system
+wt config detect
+
+# List all supported editors (shows only available ones)
+wt config list
+
+# List all supported editors including unavailable ones
+wt config list --all
+
+# Set your preferred editor
+wt config set editor vscode
+wt config set editor vim
+wt config set editor intellij
+
+# Get current editor configuration
+wt config get editor
+```
+
+#### Configuration File
+
+Editor preferences are stored in `~/.config/git-worktree-cli/config.yaml`. You can manually edit this file if needed:
+
+```yaml
+editor: vscode
+```
 
 ## Worktree Organization
 
@@ -181,9 +235,19 @@ wt remove feature/authentication
 |---------|-------------|---------|
 | `wt add [branch]` | Create a new worktree for a branch | |
 | `wt list` | List all worktrees | |
-| `wt open [branch]` | Open a worktree in VS Code | |
+| `wt open [branch]` | Open a worktree in your configured editor | |
 | `wt remove [branch]` | Remove a worktree | |
+| `wt config` | Manage configuration (editor preferences) | |
 | `wt help` | Display help information | |
+
+### Config Subcommands
+
+| Command | Description |
+|---------|-------------|
+| `wt config detect` | Detect available editors on your system |
+| `wt config list` | List all supported editors |
+| `wt config set editor <name>` | Set your preferred editor |
+| `wt config get editor` | Get current editor configuration |
 
 ### Global Behavior
 
@@ -212,8 +276,11 @@ make watch
 │   ├── add.go             # Add worktree command
 │   ├── list.go            # List worktrees command
 │   ├── open.go            # Open worktree command
-│   └── remove.go          # Remove worktree command
+│   ├── remove.go          # Remove worktree command
+│   └── config.go          # Configuration command
 ├── pkg/
+│   ├── config/
+│   │   └── config.go      # Configuration management
 │   ├── git/
 │   │   └── gitUtils.go    # Git operations utilities
 │   └── util.go            # General utilities
@@ -227,6 +294,7 @@ make watch
 
 - [cobra](https://github.com/spf13/cobra) - CLI framework
 - [promptui](https://github.com/manifoldco/promptui) - Interactive prompts
+- [yaml.v3](https://gopkg.in/yaml.v3) - YAML configuration parsing
 
 ## Troubleshooting
 
@@ -234,18 +302,35 @@ make watch
 
 Make sure you're running the command from within a Git repository.
 
-### VS Code doesn't open
+### "No supported editors found"
 
-Ensure the `code` command is available in your PATH. You can verify this by running:
-```bash
-which code  # On macOS/Linux
-where code  # On Windows
-```
+If you get an error about no editors being found, you need to install a supported code editor. Run `wt config list --all` to see all supported editors.
 
-To install the `code` command in VS Code:
-1. Open VS Code
-2. Open the Command Palette (Cmd+Shift+P on macOS, Ctrl+Shift+P on Windows/Linux)
-3. Type "Shell Command: Install 'code' command in PATH"
+### Editor doesn't open
+
+If the editor doesn't open when you use `wt open` or `wt add -o`:
+
+1. Check which editors are available on your system:
+   ```bash
+   wt config detect
+   ```
+
+2. Verify your editor's command is in your PATH:
+   ```bash
+   which code    # For VS Code (macOS/Linux)
+   which vim     # For Vim
+   where code    # For Windows
+   ```
+
+3. Set a specific editor if auto-detection isn't working:
+   ```bash
+   wt config set editor vim
+   ```
+
+4. For VS Code specifically, you may need to install the `code` command:
+   - Open VS Code
+   - Open the Command Palette (Cmd+Shift+P on macOS, Ctrl+Shift+P on Windows/Linux)
+   - Type "Shell Command: Install 'code' command in PATH"
 
 ### Worktree already exists
 

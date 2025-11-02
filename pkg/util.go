@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/AaronDyke/git-worktree-cli/pkg/config"
 )
 
 func PathExists(path string) bool {
@@ -14,12 +16,22 @@ func PathExists(path string) bool {
 }
 
 func OpenDir(dir string) {
-	openCmd := exec.Command("code", dir)
-	_, err := openCmd.Output()
+	// Get configured editor
+	editor, err := config.GetConfiguredEditor()
 	if err != nil {
-		fmt.Println("Error opening worktree using VS Code", err)
+		fmt.Printf("Error getting editor: %v\n", err)
+		fmt.Println("Tip: Configure an editor with 'wt config set editor <name>'")
+		fmt.Println("     Or run 'wt config list' to see available editors")
 		return
 	}
+
+	openCmd := exec.Command(editor.Command, dir)
+	_, err = openCmd.Output()
+	if err != nil {
+		fmt.Printf("Error opening directory using %s: %v\n", editor.Name, err)
+		return
+	}
+	fmt.Printf("Opened directory in %s\n", editor.Name)
 }
 
 func AskForConfirmation(s string) bool {
